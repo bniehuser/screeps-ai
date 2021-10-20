@@ -1,4 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
+import { BREED, CreepBreeds, doSpawn } from "spawn/spawn";
 
 declare global {
   /*
@@ -22,6 +23,7 @@ declare global {
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
       log: any;
@@ -33,6 +35,11 @@ declare global {
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
+
+  // gross
+  doSpawn();
+
+  Object.values(Game.creeps).forEach(c => CreepBreeds[c.memory.role as BREED].ai(c));
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
